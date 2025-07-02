@@ -9,16 +9,24 @@ export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | string): string {
+  const validDate = new Date(date);
+  if (isNaN(validDate.getTime())) {
+    return 'Fecha inválida';
+  }
   return new Intl.DateTimeFormat('es-CO', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     timeZone: 'America/Bogota'
-  }).format(date);
+  }).format(validDate);
 }
 
-export function formatDateTime(date: Date): string {
+export function formatDateTime(date: Date | string): string {
+  const validDate = new Date(date);
+  if (isNaN(validDate.getTime())) {
+    return 'Fecha inválida';
+  }
   return new Intl.DateTimeFormat('es-CO', {
     year: 'numeric',
     month: '2-digit',
@@ -26,5 +34,5 @@ export function formatDateTime(date: Date): string {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'America/Bogota'
-  }).format(date);
+  }).format(validDate);
 }

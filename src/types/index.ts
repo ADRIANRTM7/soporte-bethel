@@ -46,6 +46,7 @@ export interface PdfTemplate {
   id: string;
   name: string;
   description: string;
+  slug: string;
   category: string;
   fields: FormField[];
   createdBy: string;
@@ -80,6 +81,7 @@ export interface FilledForm {
     client?: string;
     supervisor?: string;
   };
+  photos: string[];
   status: 'draft' | 'completed' | 'approved' | 'rejected';
   pdfUrl?: string;
 }

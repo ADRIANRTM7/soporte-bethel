@@ -9,6 +9,10 @@ import LoginForm from "@/components/auth/LoginForm";
 import Layout from "@/components/common/Layout";
 import Dashboard from "./pages/Dashboard";
 import WorkOrders from "./pages/WorkOrders";
+import Users from "./pages/Users";
+import Templates from "./pages/Templates";
+import Forms from "./pages/Forms";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +36,10 @@ const App = () => (
               <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/work-orders" element={<WorkOrders />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/templates" element={<Templates />} />
+                <Route path="/forms" element={<Forms />} />
+                <Route path="/reports" element={<Reports />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

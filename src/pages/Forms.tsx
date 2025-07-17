@@ -227,12 +227,12 @@ const FormsPage: React.FC = () => {
                 <h3 className="text-lg font-medium">Información del Formulario</h3>
                 {selectedTemplate.fields.map((field, index) => (
                   <div key={index}>
-                    <Label htmlFor={field}>{field}</Label>
+                    <Label htmlFor={field.id}>{field.label}</Label>
                     <Input
-                      id={field}
-                      value={formData[field] || ''}
-                      onChange={(e) => handleFieldChange(field, e.target.value)}
-                      placeholder={`Ingrese ${field.toLowerCase()}`}
+                      id={field.id}
+                      value={formData[field.name] || ''}
+                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                      placeholder={`Ingrese ${field.label.toLowerCase()}`}
                     />
                   </div>
                 ))}

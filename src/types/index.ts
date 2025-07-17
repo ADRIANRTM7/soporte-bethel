@@ -95,6 +95,31 @@ export interface Notification {
   read: boolean;
   createdAt: Date;
   workOrderId?: string;
+  ticketId?: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  ticketNumber: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone?: string;
+  clientCompany?: string;
+  subject: string;
+  description: string;
+  category: 'hardware' | 'software' | 'network' | 'installation' | 'maintenance' | 'configuration' | 'other';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'open' | 'assigned' | 'in_progress' | 'resolved' | 'closed';
+  assignedTo?: string;
+  assignedBy?: string;
+  workOrderId?: string;
+  attachments: string[];
+  internalNotes: string;
+  resolutionNotes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  resolvedAt?: Date;
+  clientVisible: boolean;
 }
 
 // Predefined form templates
@@ -102,6 +127,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Orden de Trabajo',
     description: 'Formato principal de orden de trabajo',
+    slug: 'orden-trabajo',
     category: 'general',
     isActive: true,
     fields: [
@@ -117,6 +143,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Visita Técnica / Diagnóstico',
     description: 'Formato para diagnósticos técnicos',
+    slug: 'visita-tecnica-diagnostico',
     category: 'diagnostic',
     isActive: true,
     fields: [
@@ -134,6 +161,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Instalación & Puesta en Marcha',
     description: 'Formato para instalaciones y puesta en marcha',
+    slug: 'instalacion-puesta-marcha',
     category: 'installation',
     isActive: true,
     fields: [
@@ -152,6 +180,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Mantenimiento P/C Multiequipo',
     description: 'Formato para mantenimiento preventivo/correctivo de múltiples equipos',
+    slug: 'mantenimiento-pc-multiequipo',
     category: 'maintenance',
     isActive: true,
     fields: [
@@ -169,6 +198,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Servicio Técnico & Soporte',
     description: 'Formato para servicios técnicos y soporte',
+    slug: 'servicio-tecnico-soporte',
     category: 'support',
     isActive: true,
     fields: [
@@ -187,6 +217,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Inventario & Hoja de Vida de Activos',
     description: 'Formato para gestión de inventarios y activos',
+    slug: 'inventario-hoja-vida-activos',
     category: 'inventory',
     isActive: true,
     fields: [
@@ -205,6 +236,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Movimientos de Materiales & Herramientas',
     description: 'Formato para control de materiales y herramientas',
+    slug: 'movimientos-materiales-herramientas',
     category: 'materials',
     isActive: true,
     fields: [
@@ -223,6 +255,7 @@ export const DEFAULT_TEMPLATES: Omit<PdfTemplate, 'id' | 'createdBy' | 'createdA
   {
     name: 'Listado Maestro de Documentos y Registros',
     description: 'Formato para control de documentos y registros',
+    slug: 'listado-maestro-documentos-registros',
     category: 'documents',
     isActive: true,
     fields: [

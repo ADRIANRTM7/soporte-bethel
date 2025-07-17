@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { WorkOrder, PdfTemplate, FilledForm, Notification, DEFAULT_TEMPLATES } from '@/types';
+import { WorkOrder, PdfTemplate, FilledForm, Notification, SupportTicket, DEFAULT_TEMPLATES } from '@/types';
 import { generateId } from '@/lib/utils';
 
 interface DataContextType {
@@ -27,6 +27,13 @@ interface DataContextType {
   createNotification: (notification: Omit<Notification, 'id' | 'createdAt'>) => void;
   markAsRead: (id: string) => void;
   getUnreadCount: (userId: string) => number;
+  
+  // Support Tickets
+  supportTickets: SupportTicket[];
+  createSupportTicket: (ticket: Omit<SupportTicket, 'id' | 'ticketNumber' | 'createdAt' | 'updatedAt' | 'status' | 'attachments' | 'internalNotes' | 'clientVisible'>) => Promise<string>;
+  updateTicket: (id: string, updates: Partial<SupportTicket>) => void;
+  assignTicketToTechnician: (ticketId: string, technicianId: string) => void;
+  createWorkOrderFromTicket: (ticketId: string, workOrderData: { assignedTechnicians: string[], scheduledDate: Date, notes: string }) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -40,6 +47,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [templates, setTemplates] = useState<PdfTemplate[]>([]);
   const [filledForms, setFilledForms] = useState<FilledForm[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
 
   // Initialize with demo data
   useEffect(() => {
@@ -47,6 +55,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const savedTemplates = localStorage.getItem('bethel_templates');
     const savedForms = localStorage.getItem('bethel_filled_forms');
     const savedNotifications = localStorage.getItem('bethel_notifications');
+    const savedTickets = localStorage.getItem('bethel_support_tickets');
 
     if (savedWorkOrders) {
       setWorkOrders(JSON.parse(savedWorkOrders));
@@ -117,6 +126,53 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications));
     }
+
+    if (savedTickets) {
+      setSupportTickets(JSON.parse(savedTickets));
+    } else {
+      // Demo tickets
+      const demoTickets: SupportTicket[] = [
+        {
+          id: generateId(),
+          ticketNumber: 'TIC-00001',
+          clientName: 'María González',
+          clientEmail: 'maria@empresa.com',
+          clientPhone: '301 234 5678',
+          clientCompany: 'Empresa XYZ',
+          subject: 'Problema con aire acondicionado',
+          description: 'El equipo de aire acondicionado no está enfriando correctamente',
+          category: 'hardware',
+          priority: 'high',
+          status: 'open',
+          attachments: [],
+          internalNotes: '',
+          createdAt: new Date('2024-12-01T10:00:00'),
+          updatedAt: new Date('2024-12-01T10:00:00'),
+          clientVisible: true
+        },
+        {
+          id: generateId(),
+          ticketNumber: 'TIC-00002',
+          clientName: 'Carlos Rodríguez',
+          clientEmail: 'carlos@hotel.com',
+          clientPhone: '302 345 6789',
+          clientCompany: 'Hotel Plaza',
+          subject: 'Instalación de nuevo sistema',
+          description: 'Necesito instalar un nuevo sistema de climatización',
+          category: 'installation',
+          priority: 'medium',
+          status: 'assigned',
+          assignedTo: '3',
+          attachments: [],
+          internalNotes: 'Cliente solicita instalación para el próximo fin de semana',
+          createdAt: new Date('2024-12-02T14:30:00'),
+          updatedAt: new Date('2024-12-02T15:00:00'),
+          clientVisible: true
+        }
+      ];
+      setSupportTickets(demoTickets);
+      localStorage.setItem('bethel_support_tickets', JSON.stringify(demoTickets));
+    }
   }, []);
 
   // Save to localStorage when data changes
@@ -135,6 +191,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     localStorage.setItem('bethel_notifications', JSON.stringify(notifications));
   }, [notifications]);
+
+  useEffect(() => {
+    localStorage.setItem('bethel_support_tickets', JSON.stringify(supportTickets));
+  }, [supportTickets]);
 
   // Work Orders
   const createWorkOrder = (orderData: Omit<WorkOrder, 'id' | 'number' | 'createdAt' | 'updatedAt'>) => {
@@ -234,6 +294,81 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return notifications.filter(n => n.userId === userId && !n.read).length;
   };
 
+  // Support Tickets
+  const generateTicketNumber = (count: number): string => {
+    return `TIC-${String(count + 1).padStart(5, '0')}`;
+  };
+
+  const createSupportTicket = async (ticketData: Omit<SupportTicket, 'id' | 'ticketNumber' | 'createdAt' | 'updatedAt' | 'status' | 'attachments' | 'internalNotes' | 'clientVisible'>): Promise<string> => {
+    const ticketNumber = generateTicketNumber(supportTickets.length);
+    const newTicket: SupportTicket = {
+      ...ticketData,
+      id: generateId(),
+      ticketNumber,
+      status: 'open',
+      attachments: [],
+      internalNotes: '',
+      clientVisible: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    setSupportTickets(prev => [...prev, newTicket]);
+    
+    // Crear notificación para supervisores
+    createNotification({
+      userId: '2', // Supervisor demo
+      title: 'Nuevo ticket de soporte',
+      message: `Nuevo ticket ${ticketNumber} creado por ${ticketData.clientName}`,
+      type: 'info',
+      read: false,
+      ticketId: newTicket.id
+    });
+    
+    return ticketNumber;
+  };
+
+  const updateTicket = (id: string, updates: Partial<SupportTicket>) => {
+    setSupportTickets(prev => prev.map(ticket => 
+      ticket.id === id 
+        ? { ...ticket, ...updates, updatedAt: new Date() }
+        : ticket
+    ));
+  };
+
+  const assignTicketToTechnician = (ticketId: string, technicianId: string) => {
+    updateTicket(ticketId, {
+      assignedTo: technicianId,
+      status: 'assigned'
+    });
+  };
+
+  const createWorkOrderFromTicket = (ticketId: string, workOrderData: { assignedTechnicians: string[], scheduledDate: Date, notes: string }) => {
+    const ticket = supportTickets.find(t => t.id === ticketId);
+    if (!ticket) return;
+
+    const newWorkOrder = {
+      clientName: ticket.clientName,
+      clientContact: `${ticket.clientEmail} - ${ticket.clientPhone}`,
+      clientAddress: ticket.clientCompany || 'Por definir',
+      description: `${ticket.subject}\n\nDescripción: ${ticket.description}`,
+      serviceType: ticket.category === 'installation' ? 'Instalación' : 
+                   ticket.category === 'maintenance' ? 'Mantenimiento' : 'Soporte Técnico',
+      priority: ticket.priority,
+      status: 'assigned' as const,
+      assignedTechnicians: workOrderData.assignedTechnicians,
+      assignedFormats: ['orden-trabajo'],
+      createdBy: '2',
+      supervisorId: '2',
+      scheduledDate: workOrderData.scheduledDate,
+      notes: workOrderData.notes,
+      evidences: []
+    };
+
+    createWorkOrder(newWorkOrder);
+    updateTicket(ticketId, { status: 'assigned' });
+  };
+
   const value: DataContextType = {
     workOrders,
     createWorkOrder,
@@ -251,7 +386,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     notifications,
     createNotification,
     markAsRead,
-    getUnreadCount
+    getUnreadCount,
+    supportTickets,
+    createSupportTicket,
+    updateTicket,
+    assignTicketToTechnician,
+    createWorkOrderFromTicket
   };
 
   return (

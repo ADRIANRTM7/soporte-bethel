@@ -32,6 +32,7 @@ const TemplatesPage: React.FC = () => {
     name: '',
     description: '',
     slug: '',
+    category: '',
     fields: [] as string[]
   });
 
@@ -40,6 +41,7 @@ const TemplatesPage: React.FC = () => {
       name: '',
       description: '',
       slug: '',
+      category: '',
       fields: []
     });
   };
@@ -58,9 +60,16 @@ const TemplatesPage: React.FC = () => {
       name: formData.name,
       description: formData.description,
       slug: formData.slug,
-      fields: formData.fields,
-      createdBy: user!.id,
-      filePath: `/templates/${formData.slug}.pdf`
+      category: formData.category || 'general',
+      fields: formData.fields.map((field, index) => ({
+        id: `field_${index}`,
+        name: field.toLowerCase().replace(/\s+/g, '_'),
+        label: field,
+        type: 'text' as const,
+        required: true
+      })),
+      isActive: true,
+      createdBy: user!.id
     });
 
     setIsCreateOpen(false);
@@ -77,7 +86,8 @@ const TemplatesPage: React.FC = () => {
       name: template.name,
       description: template.description,
       slug: template.slug,
-      fields: template.fields
+      category: template.category,
+      fields: template.fields.map(field => field.label)
     });
   };
 
@@ -88,7 +98,14 @@ const TemplatesPage: React.FC = () => {
       name: formData.name,
       description: formData.description,
       slug: formData.slug,
-      fields: formData.fields
+      category: formData.category,
+      fields: formData.fields.map((field, index) => ({
+        id: `field_${index}`,
+        name: field.toLowerCase().replace(/\s+/g, '_'),
+        label: field,
+        type: 'text' as const,
+        required: true
+      }))
     });
 
     setEditingTemplate(null);
@@ -191,6 +208,16 @@ const TemplatesPage: React.FC = () => {
               </div>
               
               <div>
+                <Label htmlFor="category">Categoría</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  placeholder="general"
+                />
+              </div>
+              
+              <div>
                 <Label htmlFor="description">Descripción</Label>
                 <Textarea
                   id="description"
@@ -275,7 +302,7 @@ const TemplatesPage: React.FC = () => {
                     <div className="flex flex-wrap gap-1 mt-1">
                       {template.fields.slice(0, 3).map((field, index) => (
                         <Badge key={index} variant="outline" className="text-xs">
-                          {field}
+                          {field.label}
                         </Badge>
                       ))}
                       {template.fields.length > 3 && (

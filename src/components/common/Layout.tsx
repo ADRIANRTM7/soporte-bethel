@@ -23,7 +23,8 @@ import {
   Settings,
   Home,
   ClipboardList,
-  Database
+  Database,
+  Headphones
 } from 'lucide-react';
 
 const Layout: React.FC = () => {
@@ -39,6 +40,7 @@ const Layout: React.FC = () => {
   const navigation = [
     { name: 'Inicio', href: '/dashboard', icon: Home, roles: ['admin', 'supervisor', 'tecnician'] },
     { name: 'Órdenes de Trabajo', href: '/work-orders', icon: ClipboardList, roles: ['admin', 'supervisor', 'tecnician'] },
+    { name: 'Tickets de Soporte', href: '/support-tickets', icon: Headphones, roles: ['admin', 'supervisor'] },
     { name: 'Usuarios', href: '/users', icon: Users, roles: ['admin'] },
     { name: 'Plantillas PDF', href: '/templates', icon: FileText, roles: ['admin', 'supervisor'] },
     { name: 'Formularios', href: '/forms', icon: Signature, roles: ['admin', 'supervisor', 'tecnician'] },

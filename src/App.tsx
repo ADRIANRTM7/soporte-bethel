@@ -13,6 +13,8 @@ import Users from "./pages/Users";
 import Templates from "./pages/Templates";
 import Forms from "./pages/Forms";
 import Reports from "./pages/Reports";
+import SupportTickets from "./pages/SupportTickets";
+import PublicSupport from "./pages/PublicSupport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<LoginForm />} />
+              <Route path="/soporte" element={<PublicSupport />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -40,6 +43,7 @@ const App = () => (
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/forms" element={<Forms />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/support-tickets" element={<SupportTickets />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

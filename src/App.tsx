@@ -7,7 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DataProvider } from "@/contexts/DataContext";
 import LoginForm from "@/components/auth/LoginForm";
 import Layout from "@/components/common/Layout";
-import Dashboard from "./pages/Dashboard";
+import DashboardSelector from "./components/dashboard/DashboardSelector";
 import WorkOrders from "./pages/WorkOrders";
 import Users from "./pages/Users";
 import Templates from "./pages/Templates";
@@ -37,7 +37,7 @@ const App = () => (
               <Route path="/soporte" element={<PublicSupport />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<DashboardSelector />} />
                 <Route path="/work-orders" element={<WorkOrders />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/templates" element={<Templates />} />

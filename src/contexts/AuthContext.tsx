@@ -5,6 +5,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
+  register: (userData: { name: string; email: string; password: string; phone?: string; company?: string }) => Promise<boolean>;
   isAuthenticated: boolean;
   hasRole: (role: UserRole) => boolean;
   hasRoles: (roles: UserRole[]) => boolean;
@@ -63,26 +64,68 @@ const DEMO_USERS: User[] = [
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
     const savedUser = localStorage.getItem('bethel_user');
+    const savedRegisteredUsers = localStorage.getItem('bethel_registered_users');
+    
     if (savedUser) {
       setUser(JSON.parse(savedUser));
+    }
+    
+    if (savedRegisteredUsers) {
+      setRegisteredUsers(JSON.parse(savedRegisteredUsers));
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simple demo authentication
-    const foundUser = DEMO_USERS.find(u => u.email === email && u.isActive);
+    // Check demo users
+    const foundDemoUser = DEMO_USERS.find(u => u.email === email && u.isActive);
     
-    if (foundUser && password === 'bethel2024') {
-      setUser(foundUser);
-      localStorage.setItem('bethel_user', JSON.stringify(foundUser));
+    if (foundDemoUser && password === 'bethel2024') {
+      setUser(foundDemoUser);
+      localStorage.setItem('bethel_user', JSON.stringify(foundDemoUser));
+      return true;
+    }
+    
+    // Check registered users
+    const foundRegisteredUser = registeredUsers.find(u => u.email === email && u.isActive);
+    
+    if (foundRegisteredUser && password === 'bethel2024') {
+      setUser(foundRegisteredUser);
+      localStorage.setItem('bethel_user', JSON.stringify(foundRegisteredUser));
       return true;
     }
     
     return false;
+  };
+
+  const register = async (userData: { name: string; email: string; password: string; phone?: string; company?: string }): Promise<boolean> => {
+    // Check if email already exists
+    const emailExists = DEMO_USERS.some(u => u.email === userData.email) || 
+                       registeredUsers.some(u => u.email === userData.email);
+    
+    if (emailExists) {
+      return false;
+    }
+
+    const newUser: User = {
+      id: `client_${Date.now()}`,
+      name: userData.name,
+      email: userData.email,
+      role: 'client',
+      phone: userData.phone,
+      createdAt: new Date(),
+      isActive: true
+    };
+
+    const updatedUsers = [...registeredUsers, newUser];
+    setRegisteredUsers(updatedUsers);
+    localStorage.setItem('bethel_registered_users', JSON.stringify(updatedUsers));
+    
+    return true;
   };
 
   const logout = () => {
@@ -102,6 +145,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     user,
     login,
     logout,
+    register,
     isAuthenticated: !!user,
     hasRole,
     hasRoles

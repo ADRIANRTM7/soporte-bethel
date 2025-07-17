@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { RegisterForm } from './RegisterForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserPlus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showRegister, setShowRegister] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +38,25 @@ const LoginForm: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  const handleRegisterSuccess = () => {
+    setShowRegister(false);
+    toast({
+      title: "Registro exitoso",
+      description: "Ahora puedes iniciar sesión con tus credenciales.",
+    });
+  };
+
+  if (showRegister) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <RegisterForm 
+          onSuccess={handleRegisterSuccess}
+          onBackToLogin={() => setShowRegister(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -86,12 +109,25 @@ const LoginForm: React.FC = () => {
               Iniciar Sesión
             </Button>
 
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowRegister(true)}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Crear Cuenta Cliente
+              </Button>
+            </div>
+
             <div className="text-sm text-muted-foreground">
               <p className="font-medium">Usuarios de Demo:</p>
               <ul className="mt-2 space-y-1">
                 <li>• Admin: admin@bethelsas.com</li>
                 <li>• Supervisor: supervisor@bethelsas.com</li>
                 <li>• Técnico: tecnico@bethelsas.com</li>
+                <li>• Cliente: cliente@empresa.com</li>
               </ul>
               <p className="mt-2">Contraseña para todos: <strong>bethel2024</strong></p>
             </div>

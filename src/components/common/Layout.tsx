@@ -42,6 +42,7 @@ const Layout: React.FC = () => {
 
   const navigation = [
     { name: 'Inicio', href: '/dashboard', icon: Home, roles: ['admin', 'supervisor', 'tecnician'] },
+    { name: 'Mis Tickets', href: '/dashboard', icon: Headphones, roles: ['client'] },
     { name: 'Órdenes de Trabajo', href: '/work-orders', icon: ClipboardList, roles: ['admin', 'supervisor', 'tecnician'] },
     { name: 'Tickets de Soporte', href: '/support-tickets', icon: Headphones, roles: ['admin', 'supervisor'] },
     { name: 'Usuarios', href: '/users', icon: Users, roles: ['admin'] },

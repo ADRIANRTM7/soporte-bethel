@@ -49,6 +49,15 @@ const DEMO_USERS: User[] = [
     phone: '+57 300 456 7890',
     createdAt: new Date('2024-02-15'),
     isActive: true
+  },
+  {
+    id: '5',
+    name: 'Cliente Demo',
+    email: 'cliente@empresa.com',
+    role: 'client',
+    phone: '+57 300 567 8901',
+    createdAt: new Date('2024-03-01'),
+    isActive: true
   }
 ];
 

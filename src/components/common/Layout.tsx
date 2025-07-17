@@ -64,6 +64,7 @@ const Layout: React.FC = () => {
       case 'admin': return 'bg-red-100 text-red-800';
       case 'supervisor': return 'bg-blue-100 text-blue-800';
       case 'tecnician': return 'bg-green-100 text-green-800';
+      case 'client': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -73,6 +74,7 @@ const Layout: React.FC = () => {
       case 'admin': return 'Administrador';
       case 'supervisor': return 'Supervisor';
       case 'tecnician': return 'Técnico';
+      case 'client': return 'Cliente';
       default: return role;
     }
   };
